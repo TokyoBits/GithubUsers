@@ -13,21 +13,23 @@ struct UserListScreen: View {
 
     var body: some View {
         List(users) { user in
-            HStack {
-                AsyncImage(url: URL(string: user.userImage)) { image in
-                    image
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: 40, height: 40)
-                        .clipShape(.circle)
-                } placeholder: {
-                    Image(systemName: "person.circle.fill")
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: 40, height: 40)
-                        .clipShape(.circle)
+            NavigationLink(value: user) {
+                HStack {
+                    AsyncImage(url: URL(string: user.userImage)) { image in
+                        image
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 40, height: 40)
+                            .clipShape(.circle)
+                    } placeholder: {
+                        Image(systemName: "person.circle.fill")
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 40, height: 40)
+                            .clipShape(.circle)
+                    }
+                    Text(user.name)
                 }
-                Text(user.name)
             }
         }
         .task {
@@ -37,6 +39,9 @@ struct UserListScreen: View {
                 print(error)
             }
         }
+        .navigationDestination(for: User.self, destination: { user in
+            RepositoryListScreen(user: user)
+        })
         .navigationBarTitle("Users")
     }
 }

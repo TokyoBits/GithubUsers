@@ -27,3 +27,13 @@ class User: Identifiable, Codable {
         case name = "login"
     }
 }
+
+extension User: Hashable {
+    static func == (lhs: User, rhs: User) -> Bool {
+        lhs === rhs
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(ObjectIdentifier(self))
+    }
+}
