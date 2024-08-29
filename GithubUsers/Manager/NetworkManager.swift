@@ -37,7 +37,7 @@ final class NetworkManager {
         guard let url = URL(string: baseURL.appending("users/\(user)/repos")) else {
             throw GithubAPIError.invalidURL
         }
-        
+
         let (data, response) = try await URLSession.shared.data(from: url)
 
         guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
@@ -45,10 +45,14 @@ final class NetworkManager {
         }
 
         do {
-            let decodesRepos = try JSONDecoder().decode([Repository].self, from: data)
-            return decodesRepos
+            let decodedRepos = try JSONDecoder().decode([Repository].self, from: data)
+            return filterOutForkedRepositories(decodedRepos)
         } catch {
             throw GithubAPIError.invalidData
         }
+    }
+
+    private func filterOutForkedRepositories(_ repos: [Repository]) -> [Repository] {
+        repos.filter { $0.isFork == false }
     }
 }
