@@ -32,4 +32,23 @@ final class NetworkManager {
             throw GithubAPIError.invalidData
         }
     }
+
+    func fetchRepositories(for user: String) async throws -> [Repository] {
+        guard let url = URL(string: baseURL.appending("users/\(user)/repos")) else {
+            throw GithubAPIError.invalidURL
+        }
+        
+        let (data, response) = try await URLSession.shared.data(from: url)
+
+        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+            throw GithubAPIError.invalidResponse
+        }
+
+        do {
+            let decodesRepos = try JSONDecoder().decode([Repository].self, from: data)
+            return decodesRepos
+        } catch {
+            throw GithubAPIError.invalidData
+        }
+    }
 }
