@@ -33,6 +33,25 @@ final class NetworkManager {
         }
     }
 
+    func fetchUserDetails(for user: String) async throws -> User {
+        guard let url = URL(string: baseURL.appending("users/\(user)")) else {
+            throw GithubAPIError.invalidURL
+        }
+
+        let (data, response) = try await URLSession.shared.data(from: url)
+
+        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+            throw GithubAPIError.invalidResponse
+        }
+
+        do {
+            let user = try JSONDecoder().decode(User.self, from: data)
+            return user
+        } catch {
+            throw GithubAPIError.invalidData
+        }
+    }
+
     func fetchRepositories(for user: String) async throws -> [Repository] {
         guard let url = URL(string: baseURL.appending("users/\(user)/repos")) else {
             throw GithubAPIError.invalidURL
