@@ -1,0 +1,5 @@
+cyclomatic_complexity:
+  - 20 # warning
+disabled_rules:
+  - function_body_length
+  - switch_case_alignment
