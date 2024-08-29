@@ -12,37 +12,68 @@ struct UserListScreen: View {
     @State private var users: [User] = []
 
     var body: some View {
-        List(users) { user in
-            NavigationLink(value: user) {
-                HStack {
-                    AsyncImage(url: URL(string: user.userImage)) { image in
-                        image
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 40, height: 40)
-                            .clipShape(.circle)
-                    } placeholder: {
-                        Image(systemName: "person.circle.fill")
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 40, height: 40)
-                            .clipShape(.circle)
+        Group {
+            if users.isEmpty {
+                unavailableView
+            } else {
+                usersListView
+                    .navigationDestination(for: User.self) { user in
+                        UserDetailScreen(username: user.username)
                     }
-                    Text(user.name)
-                }
             }
         }
         .task {
-            do {
-                users = try await networkManager.fetchUsers()
-            } catch {
-                print(error)
+            await fetchUsers()
+        }
+        .navigationBarTitle("Users")
+    }
+
+    private var unavailableView: some View {
+        ContentUnavailableView {
+            Label("No Users", systemImage: "person.crop.circle.dashed")
+        } description: {
+            Text("Unable to display users list. Please try again later.")
+        } actions: {
+            Button("Try Again") {
+                Task {
+                    await fetchUsers()
+                }
+            }
+            .buttonStyle(.borderedProminent)
+        }
+    }
+
+    private var usersListView: some View {
+        List {
+            ForEach(users) { user in
+                NavigationLink(value: user) {
+                    HStack {
+                        AsyncImage(url: URL(string: user.userImage)) { image in
+                            image
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 40, height: 40)
+                                .clipShape(.circle)
+                        } placeholder: {
+                            Image(systemName: "person.circle.fill")
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 40, height: 40)
+                                .clipShape(.circle)
+                        }
+                        Text(user.username)
+                    }
+                }
             }
         }
-        .navigationDestination(for: User.self, destination: { user in
-            UserDetailScreen(user: user)
-        })
-        .navigationBarTitle("Users")
+    }
+
+    private func fetchUsers() async {
+        do {
+            users = try await networkManager.fetchUsers()
+        } catch {
+            print(error)
+        }
     }
 }
 
