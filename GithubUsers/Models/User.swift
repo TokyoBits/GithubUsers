@@ -9,9 +9,16 @@ import SwiftData
 
 class User: Identifiable, Codable {
     let id: Int
-    let avatarUrl: String?
-    let gravatarUrl: String?
+    private let avatarUrl: String?
+    private let gravatarUrl: String?
     let name: String
+
+    var userImage: String {
+        if let avatarUrl { return avatarUrl }
+        if let gravatarUrl { return gravatarUrl }
+
+        return ""
+    }
 
     enum CodingKeys: String, CodingKey {
         case id

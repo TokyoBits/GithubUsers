@@ -13,7 +13,22 @@ struct UserListScreen: View {
 
     var body: some View {
         List(users) { user in
-            Text(user.name)
+            HStack {
+                AsyncImage(url: URL(string: user.userImage)) { image in
+                    image
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 40, height: 40)
+                        .clipShape(.circle)
+                } placeholder: {
+                    Image(systemName: "person.circle.fill")
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 40, height: 40)
+                        .clipShape(.circle)
+                }
+                Text(user.name)
+            }
         }
         .task {
             do {
