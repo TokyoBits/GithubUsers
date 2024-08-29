@@ -40,7 +40,7 @@ struct UserListScreen: View {
             }
         }
         .navigationDestination(for: User.self, destination: { user in
-            RepositoryListScreen(user: user)
+            UserDetailScreen(user: user)
         })
         .navigationBarTitle("Users")
     }
