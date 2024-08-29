@@ -10,18 +10,30 @@ import SwiftUI
 final class NetworkManager {
     static let shared = NetworkManager()
 
-    private init() {}
-
     private let baseURL: String = "https://api.github.com/"
 
-    func fetchUsers() async throws -> [User] {
-        guard let url = URL(string: baseURL.appending("users")) else {
-            throw GithubAPIError.invalidURL
+    private init() {}
+
+    func customRequest(endpoint: String) -> URLRequest {
+        let url = URL(string: baseURL.appending(endpoint))!
+        var request = URLRequest(url: url)
+        request.setValue("application/vnd.github+json", forHTTPHeaderField: "Accept")
+
+        // To prevent rate limiting generate a GitHub Personal token and add it to the Info.plist
+        if let authToken = Bundle.main.object(forInfoDictionaryKey: "GITHUB_TOKEN") as? String, !authToken.isEmpty {
+            request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
         }
+        return request
+    }
 
-        let (data, response) = try await URLSession.shared.data(from: url)
+    func fetchUsers() async throws -> [User] {
+        let (data, response) = try await URLSession.shared.data(for: customRequest(endpoint: "users"))
 
-        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+        guard let httpResponse = response as? HTTPURLResponse else { throw GithubAPIError.invalidResponse }
+
+        if httpResponse.statusCode == 403 {
+            throw GithubAPIError.rateLimitExceeded
+        } else if httpResponse.statusCode != 200 {
             throw GithubAPIError.invalidResponse
         }
 
@@ -34,13 +46,13 @@ final class NetworkManager {
     }
 
     func fetchUserDetails(for user: String) async throws -> User {
-        guard let url = URL(string: baseURL.appending("users/\(user)")) else {
-            throw GithubAPIError.invalidURL
-        }
+        let (data, response) = try await URLSession.shared.data(for: customRequest(endpoint: "users/\(user)"))
 
-        let (data, response) = try await URLSession.shared.data(from: url)
+        guard let httpResponse = response as? HTTPURLResponse else { throw GithubAPIError.invalidResponse }
 
-        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+        if httpResponse.statusCode == 403 {
+            throw GithubAPIError.rateLimitExceeded
+        } else if httpResponse.statusCode != 200 {
             throw GithubAPIError.invalidResponse
         }
 
@@ -53,13 +65,13 @@ final class NetworkManager {
     }
 
     func fetchRepositories(for user: String) async throws -> [Repository] {
-        guard let url = URL(string: baseURL.appending("users/\(user)/repos")) else {
-            throw GithubAPIError.invalidURL
-        }
+        let (data, response) = try await URLSession.shared.data(for: customRequest(endpoint: "users/\(user)/repos"))
 
-        let (data, response) = try await URLSession.shared.data(from: url)
+        guard let httpResponse = response as? HTTPURLResponse else { throw GithubAPIError.invalidResponse }
 
-        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+        if httpResponse.statusCode == 403 {
+            throw GithubAPIError.rateLimitExceeded
+        } else if httpResponse.statusCode != 200 {
             throw GithubAPIError.invalidResponse
         }
 
