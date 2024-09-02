@@ -76,7 +76,10 @@ final class NetworkManager {
         }
 
         do {
-            let decodedRepos = try JSONDecoder().decode([Repository].self, from: data)
+            let decoder = JSONDecoder()
+            decoder.dateDecodingStrategy = .iso8601
+
+            let decodedRepos = try decoder.decode([Repository].self, from: data)
             return filterOutForkedRepositories(decodedRepos)
         } catch {
             throw GithubAPIError.invalidData
