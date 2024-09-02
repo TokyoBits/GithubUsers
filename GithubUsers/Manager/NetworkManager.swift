@@ -26,6 +26,7 @@ final class NetworkManager {
         return request
     }
 
+    // TODO: - Implement Paging to fetch more users
     func fetchUsers() async throws -> [User] {
         let (data, response) = try await URLSession.shared.data(for: customRequest(endpoint: "users"))
 
@@ -64,6 +65,7 @@ final class NetworkManager {
         }
     }
 
+    // TODO: - Implement Paging to fetch more repositories
     func fetchRepositories(for user: String) async throws -> [Repository] {
         let (data, response) = try await URLSession.shared.data(for: customRequest(endpoint: "users/\(user)/repos"))
 
@@ -76,7 +78,10 @@ final class NetworkManager {
         }
 
         do {
-            let decodedRepos = try JSONDecoder().decode([Repository].self, from: data)
+            let decoder = JSONDecoder()
+            decoder.dateDecodingStrategy = .iso8601
+
+            let decodedRepos = try decoder.decode([Repository].self, from: data)
             return filterOutForkedRepositories(decodedRepos)
         } catch {
             throw GithubAPIError.invalidData

@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		9C24AF9C2C80B71200FF9A41 /* WebUI in Frameworks */ = {isa = PBXBuildFile; productRef = 9C24AF9B2C80B71200FF9A41 /* WebUI */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		9C3227732C8050BC004EE2BB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -52,6 +56,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9C24AF9C2C80B71200FF9A41 /* WebUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -104,6 +109,7 @@
 			);
 			name = GithubUsers;
 			packageProductDependencies = (
+				9C24AF9B2C80B71200FF9A41 /* WebUI */,
 			);
 			productName = GithubUsers;
 			productReference = 9C3227602C8050BB004EE2BB /* GithubUsers.app */;
@@ -160,6 +166,9 @@
 			);
 			mainGroup = 9C3227572C8050BB004EE2BB;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				9C24AF9A2C80B71200FF9A41 /* XCRemoteSwiftPackageReference "WebUI" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 9C3227612C8050BB004EE2BB /* Products */;
 			projectDirPath = "";
@@ -489,6 +498,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		9C24AF9A2C80B71200FF9A41 /* XCRemoteSwiftPackageReference "WebUI" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/cybozu/WebUI";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.1.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		9C24AF9B2C80B71200FF9A41 /* WebUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9C24AF9A2C80B71200FF9A41 /* XCRemoteSwiftPackageReference "WebUI" */;
+			productName = WebUI;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 9C3227582C8050BB004EE2BB /* Project object */;
 }
