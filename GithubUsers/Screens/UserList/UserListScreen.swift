@@ -20,6 +20,9 @@ struct UserListScreen: View {
                     .navigationDestination(for: User.self) { user in
                         UserDetailScreen(username: user.username)
                     }
+                    .refreshable {
+                        await fetchUsers()
+                    }
             }
         }
         .task {
@@ -53,19 +56,21 @@ struct UserListScreen: View {
                                 .resizable()
                                 .scaledToFill()
                                 .frame(width: 40, height: 40)
-                                .clipShape(.circle)
+                                .circularImage()
                         } placeholder: {
                             Image(systemName: "person.circle.fill")
                                 .resizable()
                                 .scaledToFill()
                                 .frame(width: 40, height: 40)
-                                .clipShape(.circle)
+                                .circularImage()
                         }
                         Text(user.username)
                     }
+                    .listRowSeparator(.hidden)
                 }
             }
         }
+        .listStyle(.plain)
     }
 
     private func fetchUsers() async {
