@@ -6,17 +6,26 @@
 //
 
 import SwiftUI
+import OSLog
 
 final class NetworkManager {
+    let logger: Logger = .init(subsystem: "jp.tokyobits.githubusers", category: "NetworkManager")
+
     static let shared = NetworkManager()
 
     private let baseURL: String = "https://api.github.com/"
 
     private init() {}
 
-    func customRequest(endpoint: String) -> URLRequest {
-        let url = URL(string: baseURL.appending(endpoint))!
-        var request = URLRequest(url: url)
+    func customRequest(endpoint: String, params: [String: String] = [:]) -> URLRequest {
+        var url = URLComponents(string: baseURL.appending(endpoint))
+        url?.queryItems = params.map { URLQueryItem(name: $0.key, value: $0.value) }
+
+        let queryString = url?.string ?? baseURL.appending(endpoint)
+
+        logger.debug("Request: \(queryString)")
+
+        var request = URLRequest(url: URL(string: queryString)!)
         request.setValue("application/vnd.github+json", forHTTPHeaderField: "Accept")
 
         // To prevent rate limiting generate a GitHub Personal token and add it to the Info.plist
@@ -26,9 +35,13 @@ final class NetworkManager {
         return request
     }
 
-    // TODO: - Implement Paging to fetch more users
-    func fetchUsers() async throws -> [User] {
-        let (data, response) = try await URLSession.shared.data(for: customRequest(endpoint: "users"))
+    func fetchUsers(since: Int = 0, perPage: Int = 30) async throws -> [User] {
+        let params: [String: String] = [
+            "per_page": "\(perPage)",
+            "since": "\(since)"
+        ]
+
+        let (data, response) = try await URLSession.shared.data(for: customRequest(endpoint: "users", params: params))
 
         guard let httpResponse = response as? HTTPURLResponse else { throw GithubAPIError.invalidResponse }
 
