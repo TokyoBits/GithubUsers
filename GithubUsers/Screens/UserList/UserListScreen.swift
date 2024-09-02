@@ -35,7 +35,9 @@ struct UserListScreen: View {
             }
         }
         .task {
-            await fetchUsers()
+            if isLoading {
+                await fetchUsers()
+            }
         }
         .navigationBarTitle("Users")
     }
@@ -96,7 +98,6 @@ struct UserListScreen: View {
                                     .circularImage()
                             }
                             Text(user.username)
-                            Text("\(user.id)")
                         }
                         .listRowSeparator(.hidden)
                     }
