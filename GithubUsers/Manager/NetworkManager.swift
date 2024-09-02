@@ -26,6 +26,7 @@ final class NetworkManager {
         return request
     }
 
+    // TODO: - Implement Paging to fetch more users
     func fetchUsers() async throws -> [User] {
         let (data, response) = try await URLSession.shared.data(for: customRequest(endpoint: "users"))
 
@@ -64,6 +65,7 @@ final class NetworkManager {
         }
     }
 
+    // TODO: - Implement Paging to fetch more repositories
     func fetchRepositories(for user: String) async throws -> [Repository] {
         let (data, response) = try await URLSession.shared.data(for: customRequest(endpoint: "users/\(user)/repos"))
 
