@@ -19,6 +19,21 @@ struct UserListScreen: View {
 
     @State private var userSince: Int = 0
 
+    @State private var usersSearchText: String = ""
+
+    @State private var showingUserSearch: Bool = false
+
+    func filteredUsers(
+        users: [User],
+        searchText: String
+    ) -> [User] {
+        guard !searchText.isEmpty else { return users }
+        return users.filter { user in
+            user.username.lowercased().contains(searchText.lowercased()) ||
+            ((user.fullName?.lowercased().contains(searchText.lowercased())) != nil)
+        }
+    }
+
     var body: some View {
         Group {
             if users.isEmpty && !isLoading {
@@ -81,7 +96,7 @@ struct UserListScreen: View {
     private var usersListView: some View {
         List {
             Section {
-                ForEach(users) { user in
+                ForEach(filteredUsers(users: users, searchText: usersSearchText)) { user in
                     NavigationLink(value: user) {
                         HStack {
                             AsyncImage(url: URL(string: user.userImage)) { image in
@@ -117,6 +132,7 @@ struct UserListScreen: View {
             }
         }
         .listStyle(.plain)
+        .searchable(text: $usersSearchText)
     }
 
     private func fetchUsers() async {
