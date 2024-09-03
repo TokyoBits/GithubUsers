@@ -98,22 +98,7 @@ struct UserListScreen: View {
             Section {
                 ForEach(filteredUsers(users: users, searchText: usersSearchText)) { user in
                     NavigationLink(value: user) {
-                        HStack {
-                            AsyncImage(url: URL(string: user.userImage)) { image in
-                                image
-                                    .resizable()
-                                    .scaledToFill()
-                                    .frame(width: 40, height: 40)
-                                    .circularImage()
-                            } placeholder: {
-                                Image(systemName: "person.circle.fill")
-                                    .resizable()
-                                    .scaledToFill()
-                                    .frame(width: 40, height: 40)
-                                    .circularImage()
-                            }
-                            Text(user.username)
-                        }
+                        UserRowView(username: user.username, imageURL: user.userImage)
                     }
                     .listRowSeparator(.hidden)
                 }
