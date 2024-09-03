@@ -99,9 +99,13 @@ final class NetworkManager {
         }
     }
 
-    // TODO: - Implement Paging to fetch more repositories
-    func fetchRepositories(for user: String) async throws -> [Repository] {
-        let (data, response) = try await URLSession.shared.data(for: customRequest(endpoint: "users/\(user)/repos"))
+    // TODO: - Implement Paging to fetch all repositories for users who have many repositories
+    func fetchRepositories(for user: String, perPage: Int = 100) async throws -> [Repository] {
+        let params: [String: String] = ["per_page": "\(perPage)"]
+
+        let (data, response) = try await URLSession.shared.data(
+            for: customRequest(endpoint: "users/\(user)/repos", params: params)
+        )
 
         guard let httpResponse = response as? HTTPURLResponse else { throw GithubAPIError.invalidResponse }
 
