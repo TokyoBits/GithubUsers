@@ -17,6 +17,7 @@ class RepositoryListViewModel {
 
     let username: String
     var repos: [Repository] = []
+    var isLoading: Bool = true
 
     var alertItem: AlertItem?
 
@@ -27,6 +28,7 @@ class RepositoryListViewModel {
     func fetchRepositories() async {
         do {
             repos = try await networkManager.fetchRepositories(for: username)
+            isLoading = false
         } catch {
             switch error {
                 case GithubAPIError.invalidURL:

@@ -18,6 +18,62 @@ struct RepositoryListView: View {
     }
 
     var body: some View {
+        Group {
+            if viewModel.repos.isEmpty && !viewModel.isLoading {
+                unavailableView
+            } else {
+                if viewModel.isLoading {
+                    initialLoadingView
+                } else {
+                    repositoryListView
+                        .listStyle(.plain)
+                        .offset(y: -8) /// Workaround: Header has gap at top after scrolling without this
+                        .ignoresSafeArea()
+                        .sheet(item: $selectedLink) { link in
+                            CustomWebView(request: link.request)
+                                .interactiveDismissDisabled()
+                                .overlay(alignment: .topTrailing) {
+                                    overlayCloseButton
+                                }
+                        }
+                }
+            }
+        }
+        .task {
+            if viewModel.isLoading {
+                await viewModel.fetchRepositories()
+            }
+        }
+        .alert(item: $viewModel.alertItem) { alertItem in
+            Alert(
+                title: alertItem.title,
+                message: alertItem.message,
+                dismissButton: alertItem.dismissButton
+            )
+        }
+    }
+
+    private var unavailableView: some View {
+        ContentUnavailableView {
+            Label("No Repositories", systemImage: "books.vertical.circle")
+        } description: {
+            Text("The user has no repositories or there was an error fetching them")
+        }
+    }
+
+    private var initialLoadingView: some View {
+        ContentUnavailableView {
+            Image(systemName: "books.vertical.circle")
+                .font(.system(size: 40))
+                .symbolEffect(.pulse)
+                .foregroundStyle(.gray)
+            Text("Loading Repositories")
+                .font(.title2)
+                .fontWeight(.semibold)
+        }
+    }
+
+    private var repositoryListView: some View {
         List {
             Section("Repositories (\(viewModel.repos.count))") {
                 ForEach(viewModel.repos) { repository in
@@ -30,22 +86,6 @@ struct RepositoryListView: View {
         }
         .refreshable {
             await viewModel.fetchRepositories()
-        }
-        .task {
-            await viewModel.fetchRepositories()
-        }
-        .listStyle(.plain)
-        .offset(y: -8) /// Workaround: Header has gap at top after scrolling without this
-        .ignoresSafeArea()
-        .sheet(item: $selectedLink) { link in
-            CustomWebView(request: link.request)
-                .interactiveDismissDisabled()
-                .overlay(alignment: .topTrailing) {
-                    overlayCloseButton
-                }
-        }
-        .alert(item: $viewModel.alertItem) { alertItem in
-            Alert(title: alertItem.title, message: alertItem.message, dismissButton: alertItem.dismissButton)
         }
     }
 
