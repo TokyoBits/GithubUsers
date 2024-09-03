@@ -80,7 +80,7 @@ struct UserListScreen: View {
                 }
             } header: {
                 HStack {
-                    Text("Fetched Users (\(viewModel.users.count))")
+                    Text("Users (\(viewModel.filteredUsers.count))")
                         .frame(maxWidth: .infinity, alignment: .leading)
                     Button {
                         Task {
