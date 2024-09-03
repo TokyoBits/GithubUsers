@@ -96,6 +96,7 @@ struct UserListScreen: View {
             }
         }
         .listStyle(.plain)
+        .scrollDismissesKeyboard(.immediately)
         .searchable(text: $viewModel.usersFilterString, prompt: "Filter Users")
     }
 }
