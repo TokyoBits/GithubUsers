@@ -16,7 +16,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ー"
+            "value" : "・"
           }
         }
       }
@@ -101,12 +101,32 @@
         }
       }
     },
+    "Loading Repositories" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "リポジトリをロード中"
+          }
+        }
+      }
+    },
     "Loading Users" : {
       "localizations" : {
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ユーザーを読み込んでいます"
+            "value" : "ユーザーをロード中"
+          }
+        }
+      }
+    },
+    "No Repositories" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "リポジトリなし"
           }
         }
       }
@@ -131,7 +151,7 @@
         }
       }
     },
-    "Please wait while data is loading." : {
+    "Please wait while data is loading" : {
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -231,6 +251,16 @@
         }
       }
     },
+    "The user has no repositories or there was an error fetching them" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "リポジトリがないか、リポジトリの取得中にエラーが発生しました"
+          }
+        }
+      }
+    },
     "Try Again" : {
       "localizations" : {
         "ja" : {
@@ -241,12 +271,12 @@
         }
       }
     },
-    "Unable to display users list. Please try again later." : {
+    "Unable to display users list. Please try again later" : {
       "localizations" : {
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ユーザーリストを表示できません。もう一度お試しください。"
+            "value" : "ユーザーを表示できません。もう一度お試しください"
           }
         }
       }

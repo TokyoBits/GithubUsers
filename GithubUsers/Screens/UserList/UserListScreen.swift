@@ -40,7 +40,7 @@ struct UserListScreen: View {
         ContentUnavailableView {
             Label("No Users", systemImage: "person.crop.circle.dashed")
         } description: {
-            Text("Unable to display users list. Please try again later.")
+            Text("Unable to display users list. Please try again later")
         } actions: {
             Button("Try Again") {
                 Task {
@@ -61,7 +61,7 @@ struct UserListScreen: View {
                 .font(.title2)
                 .fontWeight(.semibold)
         } description: {
-            Text("Please wait while data is loading.")
+            Text("Please wait while data is loading")
         } actions: {
             Button("Reload") {
                 Task {
