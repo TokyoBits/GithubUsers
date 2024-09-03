@@ -6,25 +6,16 @@
 //
 
 import SwiftUI
-import OSLog
 
 struct UserListScreen: View {
-    let logger = Logger(subsystem: "jp.tokyobits.githubusers", category: "UserListScreen")
-
-    @State private var networkManager = NetworkManager.shared
-    @State private var users: [User] = []
-
-    @State private var isLoading: Bool = true
-    @State private var usersPerPage: Int = 30
-
-    @State private var userSince: Int = 0
+    @State private var viewModel = UserListScreenViewModel()
 
     var body: some View {
         Group {
-            if users.isEmpty && !isLoading {
+            if viewModel.users.isEmpty && !viewModel.isLoading {
                 unavailableView
             } else {
-                if isLoading {
+                if viewModel.isLoading {
                     initialLoadingView
                 } else {
                     usersListView
@@ -35,8 +26,8 @@ struct UserListScreen: View {
             }
         }
         .task {
-            if isLoading {
-                await fetchUsers()
+            if viewModel.isLoading {
+                await viewModel.fetchUsers()
             }
         }
         .navigationBarTitle("Users")
@@ -50,7 +41,7 @@ struct UserListScreen: View {
         } actions: {
             Button("Try Again") {
                 Task {
-                    await fetchUsers()
+                    await viewModel.fetchUsers()
                 }
             }
             .buttonStyle(.borderedProminent)
@@ -71,7 +62,7 @@ struct UserListScreen: View {
         } actions: {
             Button("Reload") {
                 Task {
-                    await fetchUsers()
+                    await viewModel.fetchUsers()
                 }
             }
             .buttonStyle(.borderedProminent)
@@ -80,59 +71,33 @@ struct UserListScreen: View {
 
     private var usersListView: some View {
         List {
+            UserSearchForm()
+                .listRowSeparator(.hidden)
             Section {
-                ForEach(users) { user in
+                ForEach(viewModel.filteredUsers) { user in
                     NavigationLink(value: user) {
-                        HStack {
-                            AsyncImage(url: URL(string: user.userImage)) { image in
-                                image
-                                    .resizable()
-                                    .scaledToFill()
-                                    .frame(width: 40, height: 40)
-                                    .circularImage()
-                            } placeholder: {
-                                Image(systemName: "person.circle.fill")
-                                    .resizable()
-                                    .scaledToFill()
-                                    .frame(width: 40, height: 40)
-                                    .circularImage()
-                            }
-                            Text(user.username)
+                        UserRowView(username: user.username, imageURL: user.userImage)
+                    }
+                    .listRowSeparator(.hidden)
+                }
+            } header: {
+                HStack {
+                    Text("Users (\(viewModel.filteredUsers.count))")
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    Button {
+                        Task {
+                            await viewModel.fetchUsers()
                         }
-                        .listRowSeparator(.hidden)
+                    } label: {
+                        Text("Load More")
+                            .font(.caption)
                     }
                 }
-            } footer: {
-                Button {
-                    Task {
-                        await fetchUsers()
-                    }
-                } label: {
-                    Text("Load More Users")
-                        .font(.headline)
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(.borderedProminent)
             }
         }
         .listStyle(.plain)
-    }
-
-    private func fetchUsers() async {
-        do {
-            logger.debug("Fetching users since \(userSince), perPage \(usersPerPage)")
-            let fetchedUsers = try await networkManager.fetchUsers(since: userSince, perPage: usersPerPage)
-            users.append(contentsOf: fetchedUsers)
-
-            guard let lastId = users.last?.id else { return }
-            logger.debug("Last user id: \(lastId)")
-            userSince = lastId
-
-            isLoading = false
-        } catch {
-            print(error)
-        }
+        .scrollDismissesKeyboard(.immediately)
+        .searchable(text: $viewModel.usersFilterString, prompt: "Filter Users")
     }
 }
 
