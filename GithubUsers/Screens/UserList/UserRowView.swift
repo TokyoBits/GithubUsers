@@ -29,7 +29,7 @@ public struct UserRowView: View {
             Text(username)
                 .font(.headline)
                 .fontWeight(.bold)
-                .foregroundStyle(.black)
+                .foregroundStyle(.primary)
         }
     }
 }
