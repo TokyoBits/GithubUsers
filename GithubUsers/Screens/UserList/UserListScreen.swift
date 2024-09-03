@@ -133,6 +133,19 @@ struct UserListScreen: View {
         }
         .listStyle(.plain)
         .searchable(text: $usersSearchText)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    showingUserSearch = true
+                } label: {
+                    Image(systemName: "magnifyingglass")
+                }
+            }
+        }
+        .sheet(isPresented: $showingUserSearch) {
+            UserSearchForm()
+                .presentationDetents([.height(200)])
+        }
     }
 
     private func fetchUsers() async {
