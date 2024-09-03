@@ -11,7 +11,7 @@ import Observation
 
 @Observable
 class UserListScreenViewModel {
-    let logger = Logger(subsystem: "jp.tokyobits.githubusers", category: "UserListScreenManager")
+    let logger = Logger(subsystem: "jp.tokyobits.githubusers", category: "UserListScreenViewModel")
 
     let networkManager = NetworkManager.shared
     var users: [User] = []
@@ -21,6 +21,8 @@ class UserListScreenViewModel {
     private var userSince: Int = 0
 
     var usersFilterString: String = ""
+
+    var alertItem: AlertItem?
 
     private func filteredUsers(
         users: [User],
@@ -49,7 +51,20 @@ class UserListScreenViewModel {
 
             isLoading = false
         } catch {
-            print(error)
+            switch error {
+                case GithubAPIError.invalidURL:
+                    alertItem = AlertContext.invalidURL
+                case GithubAPIError.invalidResponse:
+                    alertItem = AlertContext.invalidResponse
+                case GithubAPIError.invalidData:
+                    alertItem = AlertContext.invalidData
+                case GithubAPIError.rateLimitExceeded:
+                    alertItem = AlertContext.rateLimitExceeded
+                default:
+                    alertItem = AlertContext.invalidResponse
+            }
+
+            logger.error("\(error)")
         }
     }
 }

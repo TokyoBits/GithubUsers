@@ -11,12 +11,14 @@ import Observation
 
 @Observable
 class UserSearchFormViewModel {
-    let logger = Logger(subsystem: "jp.tokyobits.githubusers", category: "UserListScreenManager")
+    let logger = Logger(subsystem: "jp.tokyobits.githubusers", category: "UserSearchFormViewModel")
 
     let networkManager = NetworkManager.shared
     var username: String = ""
     var fetchedUser: User?
     var hasSearched: Bool = false
+
+    var alertItem: AlertItem?
 
     func resetSearch() {
         username = ""
@@ -29,9 +31,21 @@ class UserSearchFormViewModel {
             logger.debug("Searching for: \(username)")
             fetchedUser = try await networkManager.fetchUser(username: username)
         } catch {
-            fetchedUser = nil
-            hasSearched = true
-            print(error)
+            resetSearch()
+            switch error {
+                case GithubAPIError.invalidURL:
+                    alertItem = AlertContext.invalidURL
+                case GithubAPIError.invalidResponse:
+                    alertItem = AlertContext.invalidResponse
+                case GithubAPIError.invalidData:
+                    alertItem = AlertContext.invalidData
+                case GithubAPIError.rateLimitExceeded:
+                    alertItem = AlertContext.rateLimitExceeded
+                default:
+                    alertItem = AlertContext.invalidResponse
+            }
+
+            logger.error("\(error)")
         }
     }
 }
