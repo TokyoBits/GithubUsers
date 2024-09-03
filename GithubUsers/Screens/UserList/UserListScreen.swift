@@ -15,13 +15,11 @@ struct UserListScreen: View {
     @State private var users: [User] = []
 
     @State private var isLoading: Bool = true
-    @State private var usersPerPage: Int = 30
 
+    @State private var usersPerPage: Int = 30
     @State private var userSince: Int = 0
 
-    @State private var usersSearchText: String = ""
-
-    @State private var showingUserSearch: Bool = false
+    @State private var usersFilterString: String = ""
 
     func filteredUsers(
         users: [User],
@@ -96,41 +94,32 @@ struct UserListScreen: View {
     private var usersListView: some View {
         List {
             Section {
-                ForEach(filteredUsers(users: users, searchText: usersSearchText)) { user in
+                ForEach(filteredUsers(users: users, searchText: usersFilterString)) { user in
                     NavigationLink(value: user) {
                         UserRowView(username: user.username, imageURL: user.userImage)
                     }
                     .listRowSeparator(.hidden)
                 }
-            } footer: {
-                Button {
-                    Task {
-                        await fetchUsers()
+            } header: {
+                HStack {
+                    Text("Fetched Users (\(users.count))")
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    Button {
+                        Task {
+                            await fetchUsers()
+                        }
+                    } label: {
+                        Text("Load More")
+                            .font(.caption)
                     }
-                } label: {
-                    Text("Load More Users")
-                        .font(.headline)
-                        .padding(8)
-                        .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.borderedProminent)
+            } footer: {
+                UserSearchForm()
+                    .listRowSeparator(.hidden)
             }
         }
         .listStyle(.plain)
-        .searchable(text: $usersSearchText)
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    showingUserSearch = true
-                } label: {
-                    Image(systemName: "magnifyingglass")
-                }
-            }
-        }
-        .sheet(isPresented: $showingUserSearch) {
-            UserSearchForm()
-                .presentationDetents([.height(200)])
-        }
+        .searchable(text: $usersFilterString, prompt: "Filter Users")
     }
 
     private func fetchUsers() async {

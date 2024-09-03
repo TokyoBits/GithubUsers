@@ -11,8 +11,6 @@ import OSLog
 struct UserSearchForm: View {
     let logger = Logger(subsystem: "jp.tokyobits.githubusers", category: "UserSearchForm")
 
-    @Environment(\.dismiss) var dismiss
-
     @State private var networkManager = NetworkManager.shared
     @State private var username: String = ""
     @State private var fetchedUser: User?
@@ -20,70 +18,40 @@ struct UserSearchForm: View {
     @State private var hasSearched: Bool = false
 
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                HStack {
-                    TextField("Username", text: $username)
-                        .onChange(of: username) { newValue in
-                            hasSearched = false
-                        }
-                        .onSubmit {
-                            Task {
-                                await fetchUser(username: username)
-                            }
-                        }
-                        .autocorrectionDisabled()
-                        .textInputAutocapitalization(.never)
-                        .textFieldStyle(.roundedBorder)
-                    Button {
+        ScrollView {
+            HStack {
+                TextField("Username", text: $username)
+                    .onChange(of: username) {
+                        hasSearched = false
+                    }
+                    .onSubmit {
                         Task {
                             await fetchUser(username: username)
                         }
-                    } label: {
-                        Text("Search")
                     }
-                    .buttonStyle(.borderedProminent)
-                }
-                .padding()
-                .navigationBarTitle("Search for GitHub User")
-                .navigationBarTitleDisplayMode(.inline)
-
-                if let fetchedUser {
-                    NavigationLink(value: fetchedUser) {
-                        HStack {
-                            AsyncImage(url: URL(string: fetchedUser.userImage)) { image in
-                                image
-                                    .resizable()
-                                    .scaledToFill()
-                                    .frame(width: 80, height: 80)
-                                    .circularImage()
-                            } placeholder: {
-                                Image(systemName: "person.circle.fill")
-                                    .resizable()
-                                    .scaledToFill()
-                                    .frame(width: 80, height: 80)
-                                    .circularImage()
-                            }
-                            Text(fetchedUser.username)
-                                .font(.headline)
-                                .fontWeight(.bold)
-                        }
+                    .autocorrectionDisabled()
+                    .textInputAutocapitalization(.never)
+                    .textFieldStyle(.roundedBorder)
+                Button {
+                    Task {
+                        await fetchUser(username: username)
                     }
+                } label: {
+                    Text("Search")
                 }
-                if hasSearched && fetchedUser == nil {
-                    Text("User not found: **\(username)** \nTry again")
-                        .multilineTextAlignment(.center)
-                }
-                Spacer()
+                .buttonStyle(.borderedProminent)
             }
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button {
-                        dismiss()
-                    } label: {
-                        Text("Cancel")
-                    }
+
+            if let fetchedUser {
+                NavigationLink(value: fetchedUser) {
+                    UserRowView(username: fetchedUser.username, imageURL: fetchedUser.userImage)
+                        .padding(.vertical, 8)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                 }
+            }
+            if hasSearched && fetchedUser == nil {
+                Text("User not found: **\(username)** \nTry again")
+                    .multilineTextAlignment(.center)
             }
         }
     }
