@@ -6,38 +6,16 @@
 //
 
 import SwiftUI
-import OSLog
 
 struct UserListScreen: View {
-    let logger = Logger(subsystem: "jp.tokyobits.githubusers", category: "UserListScreen")
-
-    @State private var networkManager = NetworkManager.shared
-    @State private var users: [User] = []
-
-    @State private var isLoading: Bool = true
-
-    @State private var usersPerPage: Int = 30
-    @State private var userSince: Int = 0
-
-    @State private var usersFilterString: String = ""
-
-    func filteredUsers(
-        users: [User],
-        searchText: String
-    ) -> [User] {
-        guard !searchText.isEmpty else { return users }
-        return users.filter { user in
-            user.username.lowercased().contains(searchText.lowercased()) ||
-            ((user.fullName?.lowercased().contains(searchText.lowercased())) != nil)
-        }
-    }
+    @State private var viewModel = UserListScreenViewModel()
 
     var body: some View {
         Group {
-            if users.isEmpty && !isLoading {
+            if viewModel.users.isEmpty && !viewModel.isLoading {
                 unavailableView
             } else {
-                if isLoading {
+                if viewModel.isLoading {
                     initialLoadingView
                 } else {
                     usersListView
@@ -48,8 +26,8 @@ struct UserListScreen: View {
             }
         }
         .task {
-            if isLoading {
-                await fetchUsers()
+            if viewModel.isLoading {
+                await viewModel.fetchUsers()
             }
         }
         .navigationBarTitle("Users")
@@ -63,7 +41,7 @@ struct UserListScreen: View {
         } actions: {
             Button("Try Again") {
                 Task {
-                    await fetchUsers()
+                    await viewModel.fetchUsers()
                 }
             }
             .buttonStyle(.borderedProminent)
@@ -84,7 +62,7 @@ struct UserListScreen: View {
         } actions: {
             Button("Reload") {
                 Task {
-                    await fetchUsers()
+                    await viewModel.fetchUsers()
                 }
             }
             .buttonStyle(.borderedProminent)
@@ -94,7 +72,7 @@ struct UserListScreen: View {
     private var usersListView: some View {
         List {
             Section {
-                ForEach(filteredUsers(users: users, searchText: usersFilterString)) { user in
+                ForEach(viewModel.filteredUsers) { user in
                     NavigationLink(value: user) {
                         UserRowView(username: user.username, imageURL: user.userImage)
                     }
@@ -102,11 +80,11 @@ struct UserListScreen: View {
                 }
             } header: {
                 HStack {
-                    Text("Fetched Users (\(users.count))")
+                    Text("Fetched Users (\(viewModel.users.count))")
                         .frame(maxWidth: .infinity, alignment: .leading)
                     Button {
                         Task {
-                            await fetchUsers()
+                            await viewModel.fetchUsers()
                         }
                     } label: {
                         Text("Load More")
@@ -119,23 +97,7 @@ struct UserListScreen: View {
             }
         }
         .listStyle(.plain)
-        .searchable(text: $usersFilterString, prompt: "Filter Users")
-    }
-
-    private func fetchUsers() async {
-        do {
-            logger.debug("Fetching users since \(userSince), perPage \(usersPerPage)")
-            let fetchedUsers = try await networkManager.fetchUsers(since: userSince, perPage: usersPerPage)
-            users.append(contentsOf: fetchedUsers)
-
-            guard let lastId = users.last?.id else { return }
-            logger.debug("Last user id: \(lastId)")
-            userSince = lastId
-
-            isLoading = false
-        } catch {
-            print(error)
-        }
+        .searchable(text: $viewModel.usersFilterString, prompt: "Filter Users")
     }
 }
 
