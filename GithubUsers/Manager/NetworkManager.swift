@@ -48,8 +48,10 @@ final class NetworkManager {
         guard let httpResponse = response as? HTTPURLResponse else { throw GithubAPIError.invalidResponse }
 
         if httpResponse.statusCode == 403 {
+            logger.error("403: Rate limit exceeded - fetchUsers")
             throw GithubAPIError.rateLimitExceeded
         } else if httpResponse.statusCode != 200 {
+            logger.error("Non-200 response: \(httpResponse.statusCode) - fetchUsers")
             throw GithubAPIError.invalidResponse
         }
 
@@ -57,6 +59,7 @@ final class NetworkManager {
             let decodedUsers = try JSONDecoder().decode([User].self, from: data)
             return decodedUsers
         } catch {
+            logger.error("Unable to decode JSON - fetchUsers")
             throw GithubAPIError.invalidData
         }
     }
@@ -67,8 +70,10 @@ final class NetworkManager {
         guard let httpResponse = response as? HTTPURLResponse else { throw GithubAPIError.invalidResponse }
 
         if httpResponse.statusCode == 403 {
+            logger.error("403: Rate limit exceeded - fetchUser")
             throw GithubAPIError.rateLimitExceeded
         } else if httpResponse.statusCode != 200 {
+            logger.error("Non-200 response: \(httpResponse.statusCode) - fetchUser")
             throw GithubAPIError.invalidResponse
         }
 
@@ -76,6 +81,7 @@ final class NetworkManager {
             let decodedUser = try JSONDecoder().decode(User.self, from: data)
             return decodedUser
         } catch {
+            logger.error("Unable to decode JSON - fetchUser")
             throw GithubAPIError.invalidData
         }
     }
@@ -86,8 +92,10 @@ final class NetworkManager {
         guard let httpResponse = response as? HTTPURLResponse else { throw GithubAPIError.invalidResponse }
 
         if httpResponse.statusCode == 403 {
+            logger.error("403: Rate limit exceeded - fetchUserDetails")
             throw GithubAPIError.rateLimitExceeded
         } else if httpResponse.statusCode != 200 {
+            logger.error("Non-200 response: \(httpResponse.statusCode) - fetchUserDetails")
             throw GithubAPIError.invalidResponse
         }
 
@@ -95,6 +103,7 @@ final class NetworkManager {
             let user = try JSONDecoder().decode(User.self, from: data)
             return user
         } catch {
+            logger.error("Unable to decode JSON - fetchUserDetails")
             throw GithubAPIError.invalidData
         }
     }
@@ -110,8 +119,10 @@ final class NetworkManager {
         guard let httpResponse = response as? HTTPURLResponse else { throw GithubAPIError.invalidResponse }
 
         if httpResponse.statusCode == 403 {
+            logger.error("403: Rate limit exceeded - fetchRepositories")
             throw GithubAPIError.rateLimitExceeded
         } else if httpResponse.statusCode != 200 {
+            logger.error("Non-200 response: \(httpResponse.statusCode) - fetchRepositories")
             throw GithubAPIError.invalidResponse
         }
 
@@ -122,6 +133,7 @@ final class NetworkManager {
             let decodedRepos = try decoder.decode([Repository].self, from: data)
             return filterOutForkedRepositories(decodedRepos)
         } catch {
+            logger.error("Unable to decode JSON - fetchRepositories")
             throw GithubAPIError.invalidData
         }
     }
