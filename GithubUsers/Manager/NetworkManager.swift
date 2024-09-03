@@ -19,10 +19,12 @@ final class NetworkManager {
 
     func customRequest(endpoint: String, params: [String: String] = [:]) -> URLRequest {
         var url = URLComponents(string: baseURL.appending(endpoint))
-        url?.queryItems = params.map { URLQueryItem(name: $0.key, value: $0.value) }
+
+        if !params.isEmpty {
+            url?.queryItems = params.map { URLQueryItem(name: $0.key, value: $0.value) }
+        }
 
         let queryString = url?.string ?? baseURL.appending(endpoint)
-
         logger.debug("Request: \(queryString)")
 
         var request = URLRequest(url: URL(string: queryString)!)
@@ -54,6 +56,25 @@ final class NetworkManager {
         do {
             let decodedUsers = try JSONDecoder().decode([User].self, from: data)
             return decodedUsers
+        } catch {
+            throw GithubAPIError.invalidData
+        }
+    }
+
+    func fetchUser(username: String) async throws -> User {
+        let (data, response) = try await URLSession.shared.data(for: customRequest(endpoint: "users/\(username)"))
+
+        guard let httpResponse = response as? HTTPURLResponse else { throw GithubAPIError.invalidResponse }
+
+        if httpResponse.statusCode == 403 {
+            throw GithubAPIError.rateLimitExceeded
+        } else if httpResponse.statusCode != 200 {
+            throw GithubAPIError.invalidResponse
+        }
+
+        do {
+            let decodedUser = try JSONDecoder().decode(User.self, from: data)
+            return decodedUser
         } catch {
             throw GithubAPIError.invalidData
         }
