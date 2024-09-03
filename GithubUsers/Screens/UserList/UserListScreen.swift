@@ -114,8 +114,8 @@ struct UserListScreen: View {
                             }
                             Text(user.username)
                         }
-                        .listRowSeparator(.hidden)
                     }
+                    .listRowSeparator(.hidden)
                 }
             } footer: {
                 Button {
@@ -125,7 +125,7 @@ struct UserListScreen: View {
                 } label: {
                     Text("Load More Users")
                         .font(.headline)
-                        .padding()
+                        .padding(8)
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
