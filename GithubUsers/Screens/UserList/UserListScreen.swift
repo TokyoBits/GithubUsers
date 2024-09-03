@@ -71,6 +71,8 @@ struct UserListScreen: View {
 
     private var usersListView: some View {
         List {
+            UserSearchForm()
+                .listRowSeparator(.hidden)
             Section {
                 ForEach(viewModel.filteredUsers) { user in
                     NavigationLink(value: user) {
@@ -91,9 +93,6 @@ struct UserListScreen: View {
                             .font(.caption)
                     }
                 }
-            } footer: {
-                UserSearchForm()
-                    .listRowSeparator(.hidden)
             }
         }
         .listStyle(.plain)
