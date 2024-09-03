@@ -17,7 +17,7 @@ struct RepositoryListView: View {
 
     var body: some View {
         List {
-            Section("Repositories") {
+            Section("Repositories (\(repos.count))") {
                 ForEach(repos) { repository in
                     RepositoryRowView(repository: repository)
                         .onTapGesture {
