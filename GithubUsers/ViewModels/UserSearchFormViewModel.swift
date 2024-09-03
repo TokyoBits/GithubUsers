@@ -30,6 +30,7 @@ class UserSearchFormViewModel {
         do {
             logger.debug("Searching for: \(username)")
             fetchedUser = try await networkManager.fetchUser(username: username)
+            hasSearched = true
         } catch {
             resetSearch()
             switch error {

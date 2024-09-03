@@ -64,7 +64,7 @@ final class NetworkManager {
         }
     }
 
-    func fetchUser(username: String) async throws -> User {
+    func fetchUser(username: String) async throws -> User? {
         let (data, response) = try await URLSession.shared.data(for: customRequest(endpoint: "users/\(username)"))
 
         guard let httpResponse = response as? HTTPURLResponse else { throw GithubAPIError.invalidResponse }
@@ -73,17 +73,19 @@ final class NetworkManager {
             logger.error("403: Rate limit exceeded - fetchUser")
             throw GithubAPIError.rateLimitExceeded
         } else if httpResponse.statusCode != 200 {
+            // Only log this response do not throw. We want to display no user message if a user does not exist
             logger.error("Non-200 response: \(httpResponse.statusCode) - fetchUser")
-            throw GithubAPIError.invalidResponse
         }
 
         do {
             let decodedUser = try JSONDecoder().decode(User.self, from: data)
             return decodedUser
         } catch {
+            // Only log this response do not throw. We want to display no user message if a user does not exist
             logger.error("Unable to decode JSON - fetchUser")
-            throw GithubAPIError.invalidData
         }
+
+        return nil
     }
 
     func fetchUserDetails(for user: String) async throws -> User {
