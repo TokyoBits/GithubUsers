@@ -47,7 +47,7 @@ struct UserDetailScreen: View {
                 .frame(width: 80, height: 80)
                 .circularImage()
         } placeholder: {
-            Image(systemName: "person.circle.fill")
+            Image(systemName: "person.circle")
                 .resizable()
                 .scaledToFill()
                 .frame(width: 80, height: 80)
