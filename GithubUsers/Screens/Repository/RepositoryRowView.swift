@@ -53,13 +53,16 @@ struct RepositoryRowView: View {
 
             Text(repository.description ?? "")
                 .font(.caption)
-            Text("Updated: " + repository.lastUpdated.formatted(
+            HStack(spacing: 0) {
+                Text("Updated:")
+                Text(repository.lastUpdated.formatted(
                     .relative(
                         presentation: .numeric,
                         unitsStyle: .narrow
                     )
                 )
-            )
+                )
+            }
             .font(.caption)
             .foregroundStyle(.secondary)
             .padding(.top, 4)
