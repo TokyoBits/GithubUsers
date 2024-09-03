@@ -8,20 +8,21 @@
 import SwiftUI
 
 struct UserDetailScreen: View {
-    @State private var networkManager = NetworkManager.shared
-    var username: String
-    @State private var user: User?
+    @State private var viewModel: UserDetailViewModel
+    @State private var selectedLink: WebViewLink?
+
+    init(username: String  = "") {
+        self.viewModel = UserDetailViewModel(username: username)
+    }
 
     var body: some View {
         userHeader
-        RepositoryListView(username: username)
+        RepositoryListView(username: viewModel.username)
         .task {
-            do {
-                let userDetails = try await networkManager.fetchUserDetails(for: username)
-                user = userDetails
-            } catch {
-                print(error)
-            }
+            await viewModel.fetchUserDetails()
+        }
+        .alert(item: $viewModel.alertItem) { alertItem in
+            Alert(title: alertItem.title, message: alertItem.message, dismissButton: alertItem.dismissButton)
         }
     }
 
@@ -40,7 +41,7 @@ struct UserDetailScreen: View {
     }
 
     private var userImageView: some View {
-        AsyncImage(url: URL(string: user?.userImage ?? "")) { image in
+        AsyncImage(url: URL(string: viewModel.user?.userImage ?? "")) { image in
             image
                 .resizable()
                 .scaledToFill()
@@ -57,10 +58,10 @@ struct UserDetailScreen: View {
 
     private var userNameView: some View {
         VStack(alignment: .leading) {
-            Text(user?.username ?? "")
+            Text(viewModel.user?.username ?? "")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
-            Text(user?.fullName ?? "")
+            Text(viewModel.user?.fullName ?? "")
                 .font(.title)
                 .lineLimit(1)
                 .minimumScaleFactor(0.8)
@@ -69,7 +70,7 @@ struct UserDetailScreen: View {
 
     @ViewBuilder
     private var userBioView: some View {
-        if let bio = user?.bio {
+        if let bio = viewModel.user?.bio {
             Text(bio)
                 .padding(.top)
         }
@@ -78,11 +79,11 @@ struct UserDetailScreen: View {
     @ViewBuilder
     private var userExtrasView: some View {
         HStack {
-            if let company = user?.company {
+            if let company = viewModel.user?.company {
                 Label(company, systemImage: "building.fill")
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
-            if let location = user?.location {
+            if let location = viewModel.user?.location {
                 Label(location, systemImage: "mappin.and.ellipse")
             }
         }
@@ -90,11 +91,11 @@ struct UserDetailScreen: View {
 
         HStack(spacing: 2) {
             Image(systemName: "person.2.fill")
-            Text("\(user?.followersCount ?? 0)")
+            Text("\(viewModel.user?.followersCount ?? 0)")
                 .bold()
             Text("followers")
             Text("~")
-            Text("\(user?.followingCount ?? 0)")
+            Text("\(viewModel.user?.followingCount ?? 0)")
                 .bold()
             Text("following")
         }

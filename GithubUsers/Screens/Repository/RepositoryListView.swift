@@ -10,15 +10,17 @@ import SwiftData
 import WebUI
 
 struct RepositoryListView: View {
-    let username: String
-    @State private var networkManager = NetworkManager.shared
-    @State private var repos: [Repository] = []
+    @State private var viewModel: RepositoryListViewModel
     @State private var selectedLink: WebViewLink?
+
+    init(username: String  = "") {
+        self.viewModel = RepositoryListViewModel(username: username)
+    }
 
     var body: some View {
         List {
-            Section("Repositories (\(repos.count))") {
-                ForEach(repos) { repository in
+            Section("Repositories (\(viewModel.repos.count))") {
+                ForEach(viewModel.repos) { repository in
                     RepositoryRowView(repository: repository)
                         .onTapGesture {
                             selectedLink = WebViewLink(string: repository.url)
@@ -27,20 +29,23 @@ struct RepositoryListView: View {
             }
         }
         .refreshable {
-            await fetchRepositories()
+            await viewModel.fetchRepositories()
+        }
+        .task {
+            await viewModel.fetchRepositories()
         }
         .listStyle(.plain)
         .offset(y: -8) /// Workaround: Header has gap at top after scrolling without this
         .ignoresSafeArea()
-        .task {
-            await fetchRepositories()
-        }
         .sheet(item: $selectedLink) { link in
             CustomWebView(request: link.request)
                 .interactiveDismissDisabled()
                 .overlay(alignment: .topTrailing) {
                     overlayCloseButton
                 }
+        }
+        .alert(item: $viewModel.alertItem) { alertItem in
+            Alert(title: alertItem.title, message: alertItem.message, dismissButton: alertItem.dismissButton)
         }
     }
 
@@ -57,15 +62,6 @@ struct RepositoryListView: View {
         }
         .padding(.top, 10)
         .padding(.trailing, 20)
-    }
-
-    // MARK: - Functions
-    private func fetchRepositories() async {
-        do {
-            repos = try await networkManager.fetchRepositories(for: username)
-        } catch {
-            print(error)
-        }
     }
 }
 
