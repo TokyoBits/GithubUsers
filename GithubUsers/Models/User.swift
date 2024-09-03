@@ -5,7 +5,7 @@
 //  Created by TokyoBits on 8/29/24.
 //
 
-import SwiftData
+import Foundation
 
 class User: Identifiable, Codable {
     let id: Int

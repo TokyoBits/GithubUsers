@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import SwiftData
 
 class Repository: Identifiable, Codable {
     let id: Int
