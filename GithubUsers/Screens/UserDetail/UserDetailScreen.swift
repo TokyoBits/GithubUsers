@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SDWebImageSwiftUI
 
 struct UserDetailScreen: View {
     @State private var viewModel: UserDetailViewModel
@@ -41,7 +42,7 @@ struct UserDetailScreen: View {
     }
 
     private var userImageView: some View {
-        AsyncImage(url: URL(string: viewModel.user?.userImage ?? "")) { image in
+        WebImage(url: URL(string: viewModel.user?.userImage ?? "")) { image in
             image
                 .resizable()
                 .scaledToFill()
