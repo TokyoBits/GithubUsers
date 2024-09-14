@@ -9,9 +9,10 @@ import SwiftUI
 import SwiftData
 
 struct ContentView: View {
+    @Environment(\.modelContext) var modelContext
     var body: some View {
         NavigationStack {
-            UserListScreen()
+            UserListScreen(container: modelContext.container)
         }
     }
 }

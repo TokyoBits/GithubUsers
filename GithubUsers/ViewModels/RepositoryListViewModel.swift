@@ -8,6 +8,7 @@
 import SwiftUI
 import OSLog
 import Observation
+import SwiftData
 
 @Observable
 class RepositoryListViewModel {
@@ -15,19 +16,49 @@ class RepositoryListViewModel {
 
     let networkManager = NetworkManager.shared
 
+    let modelContext: ModelContext
+
     let username: String
     var repos: [Repository] = []
     var isLoading: Bool = true
 
     var alertItem: AlertItem?
 
-    init(username: String) {
+    init(with container: ModelContainer, username: String) {
+        self.modelContext = ModelContext(container)
         self.username = username
+//        loadRepositories()
+    }
+
+    func loadRepositories() {
+        do {
+            let descriptor = FetchDescriptor<Repository>(predicate: #Predicate { repo in
+                repo.owner == username
+            }, sortBy: [SortDescriptor(\.lastUpdated, order: .reverse)])
+
+            repos = try modelContext.fetch(descriptor)
+
+            guard repos.count > 0 || !isLoading else {
+                Task.detached {
+                    await self.fetchRepositories()
+                }
+                return
+            }
+
+            isLoading = false
+        } catch {
+            logger.error("Loading Repositories from SwiftData Failed")
+        }
     }
 
     func fetchRepositories() async {
         do {
             repos = try await networkManager.fetchRepositories(for: username)
+            for repo in repos {
+                modelContext.insert(repo)
+            }
+
+            try? modelContext.save()
             isLoading = false
         } catch {
             switch error {

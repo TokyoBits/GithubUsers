@@ -51,7 +51,7 @@ struct RepositoryRowView: View {
                 }
             }
 
-            Text(repository.description ?? "")
+            Text(repository.summary ?? "")
                 .font(.caption)
             HStack(spacing: 0) {
                 Text("Updated:")
@@ -76,12 +76,13 @@ struct RepositoryRowView: View {
             repository: Repository(
                 id: 1,
                 name: "Inferno",
-                description: "Metal Shaders for SwiftUI.",
+                summary: "Metal Shaders for SwiftUI.",
                 language: "Metal",
                 isFork: false,
                 starsCount: 10000,
                 url: "https://github.com/twostraws/Inferno",
-                lastUpdated: Calendar.current.date(byAdding: .day, value: -1, to: .now)!
+                lastUpdated: Calendar.current.date(byAdding: .day, value: -1, to: .now)!,
+                owner: "twostraws"
             )
         )
     }

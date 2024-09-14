@@ -6,12 +6,14 @@
 //
 
 import Foundation
+import SwiftData
 
-class User: Identifiable, Codable {
-    let id: Int
-    private let avatarUrl: String?
-    private let gravatarUrl: String?
-    let username: String
+@Model
+class User: Identifiable, Decodable {
+    var id: Int
+    private var avatarUrl: String?
+    private var gravatarUrl: String?
+    var username: String
     var fullName: String?
     var bio: String?
     var company: String?
@@ -48,6 +50,20 @@ class User: Identifiable, Codable {
         self.location = location
         self.followersCount = followersCount
         self.followingCount = followingCount
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.id = try container.decode(Int.self, forKey: .id)
+        self.avatarUrl = try? container.decode(String.self, forKey: .avatarUrl)
+        self.gravatarUrl = try? container.decode(String.self, forKey: .gravatarUrl)
+        self.username = try container.decode(String.self, forKey: .username)
+        self.fullName = try? container.decode(String.self, forKey: .fullName)
+        self.bio = try? container.decode(String.self, forKey: .bio)
+        self.company = try? container.decode(String.self, forKey: .company)
+        self.location = try? container.decode(String.self, forKey: .location)
+        self.followersCount = try? container.decode(Int.self, forKey: .followersCount)
+        self.followingCount = try? container.decode(Int.self, forKey: .followingCount)
     }
 
     enum CodingKeys: String, CodingKey {

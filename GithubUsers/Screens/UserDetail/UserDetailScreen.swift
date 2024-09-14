@@ -9,6 +9,8 @@ import SwiftUI
 import SDWebImageSwiftUI
 
 struct UserDetailScreen: View {
+    @Environment(\.modelContext) var modelContext
+
     @State private var viewModel: UserDetailViewModel
     @State private var selectedLink: WebViewLink?
 
@@ -18,7 +20,7 @@ struct UserDetailScreen: View {
 
     var body: some View {
         userHeader
-        RepositoryListView(username: viewModel.username)
+        RepositoryListView(container: modelContext.container, username: viewModel.username)
         .task {
             await viewModel.fetchUserDetails()
         }
