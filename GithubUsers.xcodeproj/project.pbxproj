@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		56129B6A2C95F01200C4E3D9 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 56129B692C95F01200C4E3D9 /* SDWebImageSwiftUI */; };
 		56D318EE2C8716F0007D022A /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 56D318D42C8716F0007D022A /* Preview Assets.xcassets */; };
 		56D318EF2C8716F0007D022A /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = 56D318E82C8716F0007D022A /* .swiftlint.yml */; };
 		56D318F02C8716F0007D022A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 56D318E92C8716F0007D022A /* Assets.xcassets */; };
@@ -87,6 +88,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				56129B6A2C95F01200C4E3D9 /* SDWebImageSwiftUI in Frameworks */,
 				56F5ACB42C95B624000E7C9D /* WebUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -269,6 +271,7 @@
 			name = GithubUsers;
 			packageProductDependencies = (
 				56F5ACB32C95B624000E7C9D /* WebUI */,
+				56129B692C95F01200C4E3D9 /* SDWebImageSwiftUI */,
 			);
 			productName = GithubUsers;
 			productReference = 9C3227602C8050BB004EE2BB /* GithubUsers.app */;
@@ -326,6 +329,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				56F5ACB22C95B624000E7C9D /* XCRemoteSwiftPackageReference "WebUI" */,
+				56129B682C95F01200C4E3D9 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */,
 			);
 			productRefGroup = 9C3227612C8050BB004EE2BB /* Products */;
 			projectDirPath = "";
@@ -689,6 +693,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		56129B682C95F01200C4E3D9 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SDWebImage/SDWebImageSwiftUI";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.1.2;
+			};
+		};
 		56F5ACB22C95B624000E7C9D /* XCRemoteSwiftPackageReference "WebUI" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/simorgh3196/WebUI";
@@ -700,6 +712,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		56129B692C95F01200C4E3D9 /* SDWebImageSwiftUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 56129B682C95F01200C4E3D9 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */;
+			productName = SDWebImageSwiftUI;
+		};
 		56F5ACB32C95B624000E7C9D /* WebUI */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 56F5ACB22C95B624000E7C9D /* XCRemoteSwiftPackageReference "WebUI" */;

@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SDWebImageSwiftUI
 
 public struct UserRowView: View {
     let username: String
@@ -13,7 +14,7 @@ public struct UserRowView: View {
 
     public var body: some View {
         HStack {
-            AsyncImage(url: URL(string: imageURL)) { image in
+            WebImage(url: URL(string: imageURL)) { image in
                 image
                     .resizable()
                     .scaledToFill()
