@@ -8,11 +8,13 @@
 import SwiftUI
 import OSLog
 import Observation
+import SwiftData
 
 @Observable
 class UserListScreenViewModel {
     let logger = Logger(subsystem: "jp.tokyobits.githubusers", category: "UserListScreenViewModel")
 
+    let modelContext: ModelContext
     let networkManager = NetworkManager.shared
     var users: [User] = []
     var isLoading: Bool = true
@@ -23,6 +25,11 @@ class UserListScreenViewModel {
     var usersFilterString: String = ""
 
     var alertItem: AlertItem?
+
+    init(with container: ModelContainer) {
+        self.modelContext = ModelContext(container)
+        loadUsers()
+    }
 
     private func filteredUsers(
         users: [User],
@@ -39,16 +46,37 @@ class UserListScreenViewModel {
         filteredUsers(users: users, searchText: usersFilterString)
     }
 
+    func loadUsers() {
+        do {
+            let descriptor = FetchDescriptor<User>(sortBy: [SortDescriptor(\.id)])
+            users = try modelContext.fetch(descriptor)
+
+            guard users.count > 0 else {
+                Task.detached {
+                    await self.fetchUsers()
+                }
+                return
+            }
+
+            isLoading = false
+        } catch {
+            logger.error("Loading Users from SwiftData Failed")
+        }
+    }
+
     func fetchUsers() async {
         do {
+            self.userSince = users.last?.id ?? 0
+            logger.debug("Last user id: \(self.users.last?.id ?? 0)")
             logger.debug("Fetching users since \(self.userSince), perPage \(self.usersPerPage)")
             let fetchedUsers = try await networkManager.fetchUsers(since: userSince, perPage: usersPerPage)
-            users.append(contentsOf: fetchedUsers)
 
-            guard let lastId = users.last?.id else { return }
-            logger.debug("Last user id: \(lastId)")
-            userSince = lastId
+            for user in fetchedUsers {
+                modelContext.insert(user)
+            }
 
+            try? modelContext.save()
+            loadUsers()
             isLoading = false
         } catch {
             switch error {

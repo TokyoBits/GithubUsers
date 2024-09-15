@@ -11,10 +11,12 @@ import WebUI
 
 struct RepositoryListView: View {
     @State private var viewModel: RepositoryListViewModel
+    
     @State private var selectedLink: WebViewLink?
 
-    init(username: String  = "") {
-        self.viewModel = RepositoryListViewModel(username: username)
+    init(container: ModelContainer, username: String  = "") {
+        let viewModel = RepositoryListViewModel(with: container, username: username)
+        _viewModel = State(initialValue: viewModel)
     }
 
     var body: some View {
@@ -41,7 +43,7 @@ struct RepositoryListView: View {
         }
         .task {
             if viewModel.isLoading {
-                await viewModel.fetchRepositories()
+                viewModel.loadRepositories()
             }
         }
         .alert(item: $viewModel.alertItem) { alertItem in
@@ -106,5 +108,8 @@ struct RepositoryListView: View {
 }
 
 #Preview {
-    RepositoryListView(username: "twostraws")
+    let config = ModelConfiguration(isStoredInMemoryOnly: true)
+    let container = try! ModelContainer(for: Repository.self, configurations: config)
+
+    RepositoryListView(container: container, username: "twostraws")
 }

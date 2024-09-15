@@ -6,28 +6,25 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct UserListScreen: View {
-    @State private var viewModel = UserListScreenViewModel()
+    @State private var viewModel: UserListScreenViewModel
+
+    init(container: ModelContainer) {
+        let viewModel = UserListScreenViewModel(with: container)
+        _viewModel = State(initialValue: viewModel)
+    }
 
     var body: some View {
         Group {
-            if viewModel.users.isEmpty && !viewModel.isLoading {
-                unavailableView
-            } else {
-                if viewModel.isLoading {
-                    initialLoadingView
-                } else {
-                    usersListView
-                        .navigationDestination(for: User.self) { user in
-                            UserDetailScreen(username: user.username)
-                        }
-                }
-            }
-        }
-        .task {
             if viewModel.isLoading {
-                await viewModel.fetchUsers()
+                initialLoadingView
+            } else {
+                usersListView
+                    .navigationDestination(for: User.self) { user in
+                        UserDetailScreen(username: user.username)
+                    }
             }
         }
         .navigationBarTitle("Users")
@@ -106,6 +103,9 @@ struct UserListScreen: View {
 
 #Preview {
     NavigationStack {
-        UserListScreen()
+        let config = ModelConfiguration(isStoredInMemoryOnly: true)
+        let container = try! ModelContainer(for: User.self, configurations: config)
+
+        UserListScreen(container: container)
     }
 }
