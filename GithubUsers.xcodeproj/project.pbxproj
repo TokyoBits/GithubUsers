@@ -33,10 +33,10 @@
 		56D319052C8716F0007D022A /* UserListScreenViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D318E52C8716F0007D022A /* UserListScreenViewModel.swift */; };
 		56D319062C8716F0007D022A /* UserSearchFormViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D318E62C8716F0007D022A /* UserSearchFormViewModel.swift */; };
 		56D319072C8716F0007D022A /* GithubUsersApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D318EA2C8716F0007D022A /* GithubUsersApp.swift */; };
-		56F5ACB42C95B624000E7C9D /* WebUI in Frameworks */ = {isa = PBXBuildFile; productRef = 56F5ACB32C95B624000E7C9D /* WebUI */; };
 		9C049D742C871FC70057A396 /* RepositoryListViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C049D732C871FBE0057A396 /* RepositoryListViewModelTests.swift */; };
 		9C049D762C8723730057A396 /* UserSearchFormViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C049D752C8723610057A396 /* UserSearchFormViewModelTests.swift */; };
 		9C049D782C872B560057A396 /* UserDetailViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C049D772C872B450057A396 /* UserDetailViewModelTests.swift */; };
+		9C115F6F2C9904AE00E5FFF9 /* WebUI in Frameworks */ = {isa = PBXBuildFile; productRef = 9C115F6E2C9904AE00E5FFF9 /* WebUI */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -89,7 +89,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				56129B6A2C95F01200C4E3D9 /* SDWebImageSwiftUI in Frameworks */,
-				56F5ACB42C95B624000E7C9D /* WebUI in Frameworks */,
+				9C115F6F2C9904AE00E5FFF9 /* WebUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -270,8 +270,8 @@
 			);
 			name = GithubUsers;
 			packageProductDependencies = (
-				56F5ACB32C95B624000E7C9D /* WebUI */,
 				56129B692C95F01200C4E3D9 /* SDWebImageSwiftUI */,
+				9C115F6E2C9904AE00E5FFF9 /* WebUI */,
 			);
 			productName = GithubUsers;
 			productReference = 9C3227602C8050BB004EE2BB /* GithubUsers.app */;
@@ -328,8 +328,8 @@
 			mainGroup = 9C3227572C8050BB004EE2BB;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				56F5ACB22C95B624000E7C9D /* XCRemoteSwiftPackageReference "WebUI" */,
 				56129B682C95F01200C4E3D9 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */,
+				9C115F6D2C9904AE00E5FFF9 /* XCRemoteSwiftPackageReference "WebUI" */,
 			);
 			productRefGroup = 9C3227612C8050BB004EE2BB /* Products */;
 			projectDirPath = "";
@@ -701,11 +701,11 @@
 				minimumVersion = 3.1.2;
 			};
 		};
-		56F5ACB22C95B624000E7C9D /* XCRemoteSwiftPackageReference "WebUI" */ = {
+		9C115F6D2C9904AE00E5FFF9 /* XCRemoteSwiftPackageReference "WebUI" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/simorgh3196/WebUI";
+			repositoryURL = "https://github.com/cybozu/WebUI";
 			requirement = {
-				branch = "support-xcode16-rc";
+				branch = main;
 				kind = branch;
 			};
 		};
@@ -717,9 +717,9 @@
 			package = 56129B682C95F01200C4E3D9 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */;
 			productName = SDWebImageSwiftUI;
 		};
-		56F5ACB32C95B624000E7C9D /* WebUI */ = {
+		9C115F6E2C9904AE00E5FFF9 /* WebUI */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 56F5ACB22C95B624000E7C9D /* XCRemoteSwiftPackageReference "WebUI" */;
+			package = 9C115F6D2C9904AE00E5FFF9 /* XCRemoteSwiftPackageReference "WebUI" */;
 			productName = WebUI;
 		};
 /* End XCSwiftPackageProductDependency section */
